@@ -137,8 +137,9 @@ export default function Personal() {
       >
         <div className="flex-1">
           <p className="text-zinc-600 dark:text-zinc-400">
-            Focused on creating intuitive and performant web experiences.
-            Bridging the gap between design and development.
+          好奇心驅動，關注新創、科技、公關與教育議題 <br />
+          擅長陌生開發、業務、銷售等與人有關的工作。 <br />
+          內容涵蓋六大主題：新創、公關、教育、人物訪談、讀書心得與產品開發。
           </p>
         </div>
       </motion.section>
