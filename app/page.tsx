@@ -215,7 +215,10 @@ export default function Personal() {
         variants={VARIANTS_SECTION}
         transition={TRANSITION_SECTION}
       >
-        <h3 className="mb-3 text-lg font-medium">Blog</h3>
+        <div className="flex items-center mb-5">
+          <h3 className="text-lg font-medium mr-4">Blog</h3>
+          <Link href="/blog" className="text-sm text-blue-600 hover:underline font-medium">全部文章</Link>
+        </div>
         <div className="flex flex-col space-y-0">
           <AnimatedBackground
             enableHover

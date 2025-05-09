@@ -1,17 +1,44 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { MorphingDialog, MorphingDialogTrigger, MorphingDialogContent, MorphingDialogClose, MorphingDialogContainer } from './morphing-dialog'
 
 export function Navbar() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitted(true)
   }
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    setShowDropdown(true)
+  }
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setShowDropdown(false), 150)
+  }
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showDropdown])
 
   return (
     <>
@@ -24,13 +51,23 @@ export function Navbar() {
           {/* 中間 About me 與 文章分類 */}
           <div className="flex items-center gap-6 flex-1 justify-start ml-8">
             <Link href="/about" className="font-medium text-zinc-900 dark:text-zinc-100 hover:underline">About me</Link>
-            <div className="relative group">
-              <span className="font-medium text-zinc-900 dark:text-zinc-100 cursor-pointer group-hover:underline">文章分類</span>
-              <div className="absolute left-0 top-full mt-2 hidden min-w-[120px] rounded-md bg-white p-2 shadow-lg ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700 group-hover:block text-base">
-                <Link href="/blog/category/startup" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">創業</Link>
-                <Link href="/blog/category/interview" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">人物專訪</Link>
-                <Link href="/blog/category/reading" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">閱讀心得</Link>
-              </div>
+            <div
+              className="relative"
+              ref={dropdownRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Link href="/blog" className="font-medium text-zinc-900 dark:text-zinc-100 hover:underline cursor-pointer">Blog</Link>
+              {showDropdown && (
+                <div className="absolute left-0 top-full mt-2 min-w-[180px] rounded-md bg-white p-2 shadow-lg ring-1 ring-zinc-200 dark:bg-zinc-900 dark:ring-zinc-700 text-base z-50">
+                  <a href="https://ray.blog.startup.adastra.tw/" target="_blank" rel="noopener noreferrer" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">新創</a>
+                  <a href="https://ray.blog.pr.adastra.tw/" target="_blank" rel="noopener noreferrer" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">公關</a>
+                  <a href="https://ray.blog.edu.adastra.tw/" target="_blank" rel="noopener noreferrer" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">教育</a>
+                  <a href="https://ray.blog.book.adastra.tw/" target="_blank" rel="noopener noreferrer" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">讀書心得</a>
+                  <a href="https://ray.blog.people.adastra.tw/" target="_blank" rel="noopener noreferrer" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">人物訪談</a>
+                  <a href="https://ray.blog.product.adastra.tw/" target="_blank" rel="noopener noreferrer" className="block px-2 py-1 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded">產品開發</a>
+                </div>
+              )}
             </div>
           </div>
           {/* 右側 電子報訂閱 */}
